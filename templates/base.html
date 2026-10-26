@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Student record management dashboard built with Python and Flask.">
+  <title>{% block title %}StudentHub — Student Records{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">S</span><span>student<span class="brand-light">hub</span><small>RECORD MANAGEMENT</small></span></a>
+      <div class="topbar-right"><span class="status-dot"></span><span>Workspace active</span><div class="profile-badge">CN</div></div>
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}<button type="button" onclick="this.parentElement.remove()" aria-label="Dismiss message">×</button></div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    <main>{% block content %}{% endblock %}</main>
+  </div>
+  <script>
+    window.setTimeout(() => document.querySelectorAll('.flash').forEach(el => el.classList.add('flash-fade')), 5000);
+  </script>
+</body>
+</html>

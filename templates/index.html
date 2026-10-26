@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">STUDENT ADMINISTRATION</p>
+    <h1>Student records,<br><span>beautifully organized.</span></h1>
+    <p class="hero-copy">A simple workspace to manage student information, track GPA, and keep records in one place.</p>
+    <a class="button button-primary" href="{{ url_for('add_student') }}">＋ Add a student</a>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+    <div class="art-card"><div class="avatar avatar-large">S</div><div class="art-lines"><b>Student profile</b><span>Organized & secure</span></div><div class="sparkle">✦</div></div>
+    <div class="art-dot dot-one"></div><div class="art-dot dot-two"></div>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <article class="stat-card"><span class="stat-icon lilac">♧</span><div><p>Total students</p><strong>{{ stats.total }}</strong></div></article>
+  <article class="stat-card"><span class="stat-icon mint">↗</span><div><p>Average GPA</p><strong>{{ "%.2f"|format(stats.avg_gpa) }}</strong></div></article>
+  <article class="stat-card"><span class="stat-icon peach">★</span><div><p>GPA 3.5 and above</p><strong>{{ stats.high_gpa }}</strong></div></article>
+</section>
+
+<section class="panel">
+  <div class="section-heading">
+    <div><p class="eyebrow">YOUR DATABASE</p><h2>Student directory</h2><p class="muted">Search, review, and manage your student records.</p></div>
+    <form class="search-form" method="get" action="{{ url_for('index') }}">
+      <span class="search-symbol">⌕</span><input type="search" name="q" value="{{ query }}" placeholder="Search name, ID, or course…" aria-label="Search students">
+      {% if query %}<a class="clear-search" href="{{ url_for('index') }}">Clear</a>{% endif %}
+    </form>
+  </div>
+
+  {% if students %}
+  <div class="table-wrap"><table>
+    <thead><tr><th>STUDENT</th><th>STUDENT ID</th><th>COURSE</th><th>AGE</th><th>GPA</th><th class="actions-heading">ACTIONS</th></tr></thead>
+    <tbody>
+    {% for s in students %}
+      <tr>
+        <td><div class="student-cell"><div class="avatar avatar-{{ loop.index0 % 5 }}">{{ s.name[:1]|upper }}</div><div><b>{{ s.name }}</b><small>{{ s.email }}</small></div></div></td>
+        <td><span class="id-pill">{{ s.student_id }}</span></td>
+        <td>{{ s.course }}</td><td>{{ s.age }}</td>
+        <td><span class="gpa-pill {% if s.gpa >= 3.5 %}gpa-good{% elif s.gpa < 2.0 %}gpa-low{% endif %}">{{ "%.2f"|format(s.gpa) }}</span></td>
+        <td><div class="row-actions"><a class="icon-button" href="{{ url_for('edit_student', student_id=s.student_id) }}" title="Edit {{ s.name }}" aria-label="Edit {{ s.name }}">✎</a>
+          <form method="post" action="{{ url_for('delete_student', student_id=s.student_id) }}" onsubmit="return confirm('Delete {{ s.name }}? This cannot be undone.');"><button class="icon-button danger-button" type="submit" title="Delete {{ s.name }}" aria-label="Delete {{ s.name }}">⌫</button></form>
+        </div></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="empty-state"><div class="empty-icon">♧</div><h3>{% if query %}No matching students{% else %}Your directory is ready{% endif %}</h3><p>{% if query %}Try another name, student ID, or course.{% else %}Add your first student to start building your directory.{% endif %}</p>{% if not query %}<a class="button button-primary" href="{{ url_for('add_student') }}">Add your first student</a>{% endif %}</div>
+  {% endif %}
+  <div class="panel-footer"><span>Showing <b>{{ students|length }}</b> record{{ '' if students|length == 1 else 's' }}{% if query %} for “{{ query }}”{% endif %}</span><span>Local SQLite database · Live updates</span></div>
+</section>
+<footer class="footer"><span>StudentHub <b>·</b> CodeNova Task 1</span><span>Built with Python + Flask</span></footer>
+{% endblock %}
